@@ -104,3 +104,7 @@
   .spacer {
     margin-top: 36px;
   }
+
+input[name="gender"] {
+  cursor: pointer;
+}
