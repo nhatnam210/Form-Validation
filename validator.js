@@ -27,9 +27,16 @@ function Validator(options) {
             switch(inputElement.type) {
                 case 'checkbox' :
                 case 'radio' :
+                    //Tới đây mới đích thị là khi kiếm đc bất kỳ thằng nào checked thì cho là đúng luôn
+                    //Riêng thằng onsubmit thôi, vì chỉ cần duyệt một lần kiếm 1 thằng thôi
+                    //Quan trọng là vì nó trùng rule.selector nên hơi lú thôi :))
+                    //Vì dù có lặp qua bao nhiêu lần thì nó cũng chỉ kiếm đúng 1 thằng duy nhất checked thôi (querySelector)
+                    //Vậy nên không cần lặp chi cho mệt :)))
                     var checkedInput = formElement.querySelector(rule.selector + ':checked')
+                    console.log(checkedInput)
                     //Nếu ko checked thì trả ra null, mà null ko thể .trim() nên lỗi
-                    //Vậy nên cần bắt trường hợp khi nó ko checked thì mặc định = ''
+                    //Vậy nên cần bắt trường hợp khi checked không tồn tại nào thì mặc định = ''
+                    //Để khi đút xuống test sẽ lấy cái '' đi test --> tất nhiên sai
                     errorMessage = rules[i](
                         checkedInput ? checkedInput : ''
                         );
@@ -65,10 +72,14 @@ function Validator(options) {
             //Lặp qua từng rule và validate
             options.rules.forEach((rule) => {
                 var inputElement = formElement.querySelector(rule.selector)
-                //ở phần input:checked, nó chỉ cần biết có 1 thằng bắt kì đc checked thì nó cho ra true luôn
+
+                console.log(inputElement)
+                //Đơn giản nếu truyền vào là thằng checkox vs radio nó không cần dùng tới value để xét
+                //Nó chỉ lợi dụng inputElement để xét kiểu (type), 
+                //nếu (checkox vs radio) thì kiểm tra checked hoặc chưa thôi
                 if(inputElement){
                     var isValid = validate(inputElement,rule)
-
+                    console.log(isValid)
                     if(!isValid) isFormValid = false; 
                 }
             })    
