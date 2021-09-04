@@ -51,10 +51,11 @@ function Validator(options) {
         if(errorMessage) {
             errorElement.innerText = errorMessage;
             formGroup.classList.add(options.toggleClass)
-        }else {
-            errorElement.innerText = '';
-            formGroup.classList.remove(options.toggleClass)
         }
+        // else {
+        //     errorElement.innerText = '';
+        //     formGroup.classList.remove(options.toggleClass)
+        // }
 
         return !errorMessage;
     }
