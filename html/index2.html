@@ -47,7 +47,23 @@
     </div>
     <script src='../js/validator2.js'></script>
     <script>
-        Validator2('#register-form',".form-group",'.form-message','invalid')
+        //Object constructor
+        //Trả về một đối tượng được khởi tạo từ Validator2
+        var form = new Validator2('#register-form',".form-group",'.form-message','invalid');
+
+        form.onSubmit = function (formData) {
+            console.log(formData);
+        }
+
+        form.okmen = 'okmen'
+
+
+    //    var form = Validator2('#register-form','.form-group','.form-message','invalid', {
+    //        onSubmit: function (data) {
+    //            console.log(data)
+    //        }
+    //    })
+
     </script>
 </body>
 

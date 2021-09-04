@@ -1,4 +1,5 @@
 function Validator2(formSelector, parentElement, errorElement,toggleClass) {
+    var _this=this;
     var formRules = {}
 
     function getParent(element, selector) {
@@ -17,7 +18,7 @@ function Validator2(formSelector, parentElement, errorElement,toggleClass) {
     //Các hàm định nghĩa quy tắc cho các rules
     var validatorRules = {
         required(value) {
-            return value ? undefined : 'Vui lòng nhập trường này!'
+            return value.trim() ? undefined : 'Vui lòng nhập trường này!'
         },
         email(value) {
             var regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -37,39 +38,40 @@ function Validator2(formSelector, parentElement, errorElement,toggleClass) {
 
     var formElement = document.querySelector(formSelector);
 
+    //this ở đây đang tương tương chính là Validator2, gióng qua html, đc khởi tạo lưu dô biến "form"
+    // console.log(this)
+
     if (formElement) {
         var inputs = formElement.querySelectorAll('[name][rules]')
 
         //Lấy ra từng rules của input
         for (var input of inputs) {
-            //Tách tưng cái rules của từng cái input ra thành chuỗi
-            var rules = input.getAttribute('rules').split('|')
+            //Tách từng cái rules của từng cái input ra thành chuỗi
+            var rulesBySplit = input.getAttribute('rules').split('|')
 
-            for(var rule of rules) {
+            for(var rule of rulesBySplit) {
                 var ruleInfo;
                 var isRuleHasValue = rule.includes(':');
 
                 //Tách tiếp lần 2 nếu có dấu ':'
                 if(isRuleHasValue) {
                     ruleInfo = rule.split(':');
-                    
                     //Gán đè thằng rule
                     rule = ruleInfo[0]; //min()
-                }  
 
-                var ruleFunc = validatorRules[rule];
-
-                if(isRuleHasValue) {
                     //Ghi đè lại cho nó mặc định là chạy luôn
                     //Tại hàm trong hàm nên sẽ hơi khó hiểu tí, không sao cả :3
-                    //Nó vẫn trả lại hàm, tức là trả ra hợp lí
-                    ruleFunc = ruleFunc(ruleInfo[1])
+                    //Nó vẫn trả lại hàm bên trong nó, tức là trả ra hợp lí
+                    validatorRules[rule] = validatorRules[rule](ruleInfo[1])
                 }
+
+                var ruleFunc = validatorRules[rule];
 
                 if(!Array.isArray(formRules[input.name])) {
                     formRules[input.name] = []
                 }
-
+                
+                //Object có các key lấy theo name, mỗi key tương ứng có value là 1 Array chứa các hàm thực thi của name đó
                 formRules[input.name].push(ruleFunc)
             }
 
@@ -79,14 +81,24 @@ function Validator2(formSelector, parentElement, errorElement,toggleClass) {
         }
 
         //Hàm thực hiện validate
-        function handleValidate(event) {
-            var rules = formRules[event.target.name];
+        function handleValidate(event) { //event của element input
+            //Array chứa các hàm thực thi lấy theo name
+            var rulesToDo = formRules[event.target.name];
             var errorMessage;
 
-           rules.some((rule)=> {
+            //Lặp qua để lấy từng hàm để thực thi kiểm tra
+            for(var rule of rulesToDo) {
                 errorMessage = rule(event.target.value)
-                return errorMessage;
-            });
+                if(errorMessage) break;
+            }
+        
+            //Để cái này cũng được, khi tìm thấy errorMessage thì nó return luôn cái loop này rồi
+            //Nên nó sẽ không chạy tiếp để xét thằng sau
+            //nhưng cách này hơi dở
+        //    rules.some((rule)=> {
+        //         errorMessage = rule(event.target.value)
+        //         return errorMessage;
+        //     });
 
             if(errorMessage) {
                 var formGroup = getParent(event.target, parentElement)
@@ -98,6 +110,8 @@ function Validator2(formSelector, parentElement, errorElement,toggleClass) {
                     }
                 }
             }
+
+            return !errorMessage;
         }
 
         //Hàm clear message lỗi
@@ -113,5 +127,62 @@ function Validator2(formSelector, parentElement, errorElement,toggleClass) {
             }
         }
         // console.log(formRules)
+
+        formElement.onsubmit = function (event) {
+            event.preventDefault();
+
+            var isFormValid = true;
+
+            for (var input of inputs) {
+                var isValid = handleValidate({ target: input});
+
+                if(!isValid) isFormValid = false;
+            }
+
+            //Khi form không có lỗi 
+            if(isFormValid){
+                if(typeof _this.onSubmit === 'function') {
+                    var enableInputs = formElement.querySelectorAll('[name]');
+
+                    //vì formValues chưa có gì hết nên dùng reduce
+                    var formValues = Array.from(enableInputs).reduce((values,input)=>{
+                            switch(input.type) {
+                                case 'radio':
+                                    var isHasChecked = formElement.querySelector('input[name="":checked]');
+                                    if(isHasChecked) {
+                                        values[input.name] = isHasChecked.value;
+                                    }else{
+                                        values[input.name] = ''
+                                    }
+                                    break;
+                                case 'checkbox':
+                                    if(input.matches(':checked')) {
+                                        if(!Array.isArray( values[input.name])) {
+                                            values[input.name] = []
+                                        }
+
+                                        values[input.name].push(input.value)
+                                    } else if(!values[input.name]) {
+                                        values[input.name] = ''
+                                    }
+                                    break;
+                                    case 'file':
+                                        values[input.name] = input.files
+                                        break;
+                                    default:
+                                        values[input.name] = input.value
+                            }
+                            return values
+                    },{})
+
+                    //Gọi hàm onSubmit và trả về các giá trị của form
+                    _this.onSubmit(formValues)
+                }else {
+                    formElement.submit();
+                }
+            } 
+        }
     }
+
+
 }
