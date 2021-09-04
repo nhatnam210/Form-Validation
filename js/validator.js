@@ -33,7 +33,7 @@ function Validator(options) {
                     //Vì dù có lặp qua bao nhiêu lần thì nó cũng chỉ kiếm đúng 1 thằng duy nhất checked thôi (querySelector)
                     //Vậy nên không cần lặp chi cho mệt :)))
                     var checkedInput = formElement.querySelector(rule.selector + ':checked')
-                    console.log(checkedInput)
+ 
                     //Nếu ko checked thì trả ra null, mà null ko thể .trim() nên lỗi
                     //Vậy nên cần bắt trường hợp khi checked không tồn tại nào thì mặc định = ''
                     //Để khi đút xuống test sẽ lấy cái '' đi test --> tất nhiên sai
@@ -74,13 +74,12 @@ function Validator(options) {
             options.rules.forEach((rule) => {
                 var inputElement = formElement.querySelector(rule.selector)
 
-                console.log(inputElement)
                 //Đơn giản nếu truyền vào là thằng checkox vs radio nó không cần dùng tới value để xét
                 //Nó chỉ lợi dụng inputElement để xét kiểu (type), 
                 //nếu (checkox vs radio) thì kiểm tra checked hoặc chưa thôi
                 if(inputElement){
                     var isValid = validate(inputElement,rule)
-                    console.log(isValid)
+           
                     if(!isValid) isFormValid = false; 
                 }
             })    
@@ -93,14 +92,18 @@ function Validator(options) {
                     // var enableInputs = formElement.querySelectorAll('[name]:not([disable])')
                     var enableInputs = formElement.querySelectorAll('[name]');
 
+                    //vì formValues chưa có gì hết nên dùng reduce
                     //Chuyển nodeList thành Array, sau đó duyệt qua reduce để cộng dồn thành Object với key và value tương ứng
                     var formValues = Array.from(enableInputs).reduce((values, input) => {
-                        //input checked ở đây bị trùng name nên nó sẽ bị ghi đè cái giá trị cuối cùng
-                        // values[input.name] = input.value;
-
                         switch(input.type) {                           
                             case 'radio' :
-                                values[input.name] = formElement.querySelector('input[name="'+ input.name +'"]:checked').value;
+                                //input checked ở đây bị trùng name nên nó sẽ bị ghi đè cái giá trị checked nếu tìm thấy
+                                var isHasChecked = formElement.querySelector('input[name="'+ input.name +'"]:checked');
+                                if(isHasChecked) {
+                                    values[input.name] = isHasChecked.value;
+                                }else{
+                                    values[input.name] = ''
+                                }
                                 break;
                             case 'checkbox':
                             if( input.matches(':checked')) {
