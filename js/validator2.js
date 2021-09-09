@@ -91,7 +91,7 @@ function Validator2(formSelector, parentElement, errorElement,toggleClass) {
                 errorMessage = rule(event.target.value)
                 if(errorMessage) break;
             }
-        
+
             //Để cái này cũng được, khi tìm thấy errorMessage thì nó return luôn cái loop này rồi
             //Nên nó sẽ không chạy tiếp để xét thằng sau
             //nhưng cách này hơi dở
