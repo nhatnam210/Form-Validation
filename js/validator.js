@@ -2,7 +2,6 @@
 //Đối tượng `validator`
 function Validator(options) {
 
-
     function getParent(element, selector) {
         while(element.parentElement) {
             if(element.parentElement.matches(selector))
@@ -33,7 +32,7 @@ function Validator(options) {
                     //Vì dù có lặp qua bao nhiêu lần thì nó cũng chỉ kiếm đúng 1 thằng duy nhất checked thôi (querySelector)
                     //Vậy nên không cần lặp chi cho mệt :)))
                     var checkedInput = formElement.querySelector(rule.selector + ':checked')
- 
+
                     //Nếu ko checked thì trả ra null, mà null ko thể .trim() nên lỗi
                     //Vậy nên cần bắt trường hợp khi checked không tồn tại nào thì mặc định = ''
                     //Để khi đút xuống test sẽ lấy cái '' đi test --> tất nhiên sai
@@ -79,7 +78,6 @@ function Validator(options) {
                 //nếu (checkox vs radio) thì kiểm tra checked hoặc chưa thôi
                 if(inputElement){
                     var isValid = validate(inputElement,rule)
-           
                     if(!isValid) isFormValid = false; 
                 }
             })    
@@ -88,7 +86,6 @@ function Validator(options) {
             if(isFormValid) {
                 //Trường hợp submit với Javascript
                 if(typeof options.onSubmit === 'function') {
-
                     // var enableInputs = formElement.querySelectorAll('[name]:not([disable])')
                     var enableInputs = formElement.querySelectorAll('[name]');
 
@@ -106,7 +103,7 @@ function Validator(options) {
                                 }
                                 break;
                             case 'checkbox':
-                            if( input.matches(':checked')) {
+                                if( input.matches(':checked')) {
                                 // console.log('tam tong ket khong checked',values)
                                 if(!Array.isArray(values[input.name])) 
                                 {
@@ -114,17 +111,16 @@ function Validator(options) {
                                 }
                                 values[input.name].push(input.value)
                                 
-                            }else if(!values[input.name]) {
+                                }else if(!values[input.name]) {
                                 values[input.name] = []
-                            }
-                            // console.log('sau khi push',values)
-                               break;
+                                }
+                                // console.log('sau khi push',values)
+                                break;
                             case 'file':
                                 values[input.name] = input.files;
                                 break;
                             default:
                                 values[input.name] = input.value;
-                                
                         }
                         // console.log('tong ket',values)
                         return values;
@@ -137,7 +133,6 @@ function Validator(options) {
                     console.log('HTML submit')
                     formElement.submit()
                 }
-                
             }
         }
 
@@ -172,9 +167,7 @@ function Validator(options) {
                     }
                 })
             }
-           
         })
-
         // console.log(selectorRulesTest)
     }
 }

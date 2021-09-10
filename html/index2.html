@@ -2,11 +2,11 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Form validator 2</title>
-    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../style.css" />
 </head>
 
 <body>
@@ -19,19 +19,22 @@
 
             <div class="form-group">
                 <label for="fullname" class="form-label">Tên đầy đủ</label>
-                <input id="fullname" name="fullname" rules="required" type="text" placeholder="VD: Nhật Naw" class="form-control">
+                <input id="fullname" name="fullname" rules="required" type="text" placeholder="VD: Nhật Naw"
+                    class="form-control" />
                 <span class="form-message"></span>
             </div>
 
             <div class="form-group">
                 <label for="email" class="form-label">Email</label>
-                <input id="email" name="email" type="text" rules="required|email" placeholder="VD: email@domain.com" class="form-control">
+                <input id="email" name="email" type="text" rules="required|email" placeholder="VD: email@domain.com"
+                    class="form-control" />
                 <span class="form-message"></span>
             </div>
 
             <div class="form-group">
                 <label for="password" class="form-label">Mật khẩu</label>
-                <input id="password" name="password" type="password" rules="required|min:8" placeholder="Nhập mật khẩu" class="form-control">
+                <input id="password" name="password" type="password" rules="required|min:8" placeholder="Nhập mật khẩu"
+                    class="form-control" />
                 <span class="form-message"></span>
             </div>
 
@@ -45,25 +48,28 @@
             <button class="form-submit">Đăng ký</button>
         </form>
     </div>
-    <script src='../js/validator2.js'></script>
+    <script src="../js/validator2.js"></script>
     <script>
         //Object constructor
         //Trả về một đối tượng được khởi tạo từ Validator2
-        var form = new Validator2('#register-form',".form-group",'.form-message','invalid');
+        var form = new Validator2(
+            "#register-form",
+            ".form-group",
+            ".form-message",
+            "invalid"
+        );
 
         form.onSubmit = function (formData) {
             console.log(formData);
-        }
+        };
 
-        form.okmen = 'okmen'
+        form.okmen = "okmen";
 
-
-    //    var form = Validator2('#register-form','.form-group','.form-message','invalid', {
-    //        onSubmit: function (data) {
-    //            console.log(data)
-    //        }
-    //    })
-
+      //    var form = Validator2('#register-form','.form-group','.form-message','invalid', {
+      //        onSubmit: function (data) {
+      //            console.log(data)
+      //        }
+      //    })
     </script>
 </body>
 
