@@ -15,7 +15,8 @@ function Validator(options) {
 
     //Hàm thực hiện validate 
     function validate(inputElement, rule) {
-        var errorElement = getParent(inputElement, options.formGroupSelector).querySelector(options.errorSelector); // dùng chung cho mọi rules
+        // dùng chung cho mọi rules
+        var errorElement = getParent(inputElement, options.formGroupSelector).querySelector(options.errorSelector); 
         var formGroup = getParent(inputElement, options.formGroupSelector);
         var errorMessage;
 
@@ -32,9 +33,9 @@ function Validator(options) {
                     //Vì dù có lặp qua bao nhiêu lần thì nó cũng chỉ kiếm đúng 1 thằng duy nhất checked thôi (querySelector)
                     //Vậy nên không cần lặp chi cho mệt :)))
                     var checkedInput = formElement.querySelector(rule.selector + ':checked')
-
+                    
                     //Nếu ko checked thì trả ra null, mà null ko thể .trim() nên lỗi
-                    //Vậy nên cần bắt trường hợp khi checked không tồn tại nào thì mặc định = ''
+                    //Vậy nên cần bắt trường hợp khi checked không tồn tại nào thì mặc định = ''//false
                     //Để khi đút xuống test sẽ lấy cái '' đi test --> tất nhiên sai
                     errorMessage = rules[i](
                         checkedInput ? checkedInput : ''
@@ -43,7 +44,7 @@ function Validator(options) {
                 default:
                     errorMessage = rules[i](inputElement.value);
             }
-
+            
             if(errorMessage) break;
         }
 
@@ -72,7 +73,6 @@ function Validator(options) {
             //Lặp qua từng rule và validate
             options.rules.forEach((rule) => {
                 var inputElement = formElement.querySelector(rule.selector)
-
                 //Đơn giản nếu truyền vào là thằng checkox vs radio nó không cần dùng tới value để xét
                 //Nó chỉ lợi dụng inputElement để xét kiểu (type), 
                 //nếu (checkox vs radio) thì kiểm tra checked hoặc chưa thôi
@@ -82,13 +82,12 @@ function Validator(options) {
                 }
             })    
 
-
             if(isFormValid) {
                 //Trường hợp submit với Javascript
                 if(typeof options.onSubmit === 'function') {
                     // var enableInputs = formElement.querySelectorAll('[name]:not([disable])')
                     var enableInputs = formElement.querySelectorAll('[name]');
-
+                    
                     //vì formValues chưa có gì hết nên dùng reduce
                     //Chuyển nodeList thành Array, sau đó duyệt qua reduce để cộng dồn thành Object với key và value tương ứng
                     var formValues = Array.from(enableInputs).reduce((values, input) => {
@@ -105,14 +104,13 @@ function Validator(options) {
                             case 'checkbox':
                                 if( input.matches(':checked')) {
                                 // console.log('tam tong ket khong checked',values)
-                                if(!Array.isArray(values[input.name])) 
-                                {
+                                    if(!Array.isArray(values[input.name])) 
+                                    {
+                                        values[input.name] = []
+                                    }
+                                    values[input.name].push(input.value)
+                                } else if(!values[input.name]) {
                                     values[input.name] = []
-                                }
-                                values[input.name].push(input.value)
-                                
-                                }else if(!values[input.name]) {
-                                values[input.name] = []
                                 }
                                 // console.log('sau khi push',values)
                                 break;
@@ -152,10 +150,11 @@ function Validator(options) {
 
             if(inputElements) {
                 Array.from(inputElements).forEach((inputElement) => {
-
-                    var errorElement = getParent(inputElement, options.formGroupSelector).querySelector(options.errorSelector); // dùng chung cho mọi rules
+                    // dùng chung cho mọi rules
+                    var errorElement = getParent(inputElement, options.formGroupSelector).querySelector(options.errorSelector); 
+                    
                     var formGroup = getParent(inputElement, options.formGroupSelector);
-
+                    
                     //Xử lý trường hợp blur ra ngoài
                     inputElement.onblur = function() {
                         validate(inputElement, rule)
